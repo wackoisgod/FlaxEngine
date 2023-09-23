@@ -10,6 +10,8 @@
 #include "Engine/Input/Mouse.h"
 #include "Engine/Input/Keyboard.h"
 #include "Engine/Graphics/RenderTask.h"
+#include "Engine/Engine/CommandLine.h"
+
 #include <Cocoa/Cocoa.h>
 #include <AppKit/AppKit.h>
 #include <QuartzCore/CAMetalLayer.h>
@@ -307,6 +309,36 @@ static void ConvertNSRect(NSScreen *screen, NSRect *r)
 - (void)setWindow:(MacWindow*)window
 {
     Window = window;
+}
+
+@end
+
+@interface DragObject : NSObject<NSDraggingSource>
+
+@end
+
+@implementation DragObject
+
+- (id)init
+{
+    if ( self = [super init] )
+    {
+       
+    }
+    return self;
+}
+
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context
+{
+    return NSDragOperationCopy;
+}
+
+- (void)draggedImage:(NSImage *)anImage movedTo:(NSPoint)aPoint
+{
+}
+
+- (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
+{
 }
 
 @end
@@ -910,6 +942,46 @@ void MacWindow::SetTitle(const StringView& title)
 DragDropEffect MacWindow::DoDragDrop(const StringView& data)
 {
     // TODO: implement using beginDraggingSession and NSDraggingSource
+    if (CommandLine::Options.Headless)
+            return DragDropEffect::None;
+    
+    NSWindow* window = (NSWindow*)_window;
+    if (auto event = [window currentEvent])
+    {
+        NSPasteboardItem *pbItem = [[[NSPasteboardItem alloc] init] autorelease];
+        [pbItem setString:AppleUtils::ToNSString(data) forType:NSPasteboardTypeString];
+        
+        NSDraggingItem* dragItem = [[NSDraggingItem alloc] initWithPasteboardWriter:pbItem];
+        MacViewImpl* view = [window contentView];
+        
+        DragObject* dragObject = [[[DragObject alloc] init] autorelease];
+        
+        NSSize sz = NSMakeSize(16,16);
+        NSRect fillRect = NSMakeRect(0, 0, 16, 16);
+        NSImage* image = [[NSImage alloc] initWithSize: sz];
+        
+        [image lockFocus];
+
+        [[[NSColor whiteColor] colorWithAlphaComponent:0.8] set];
+        NSRectFill(fillRect);
+        [[NSColor blackColor] set];
+        NSFrameRectWithWidthUsingOperation(fillRect,1.0f,NSCompositeDestinationOver);
+        
+        [image unlockFocus];
+
+        NSPoint down = [event locationInWindow];
+        NSPoint p = [view convertPoint:down fromView:nil];
+
+        [dragItem setDraggingFrame:NSMakeRect(p.x, p.y, 16, 16) contents:image];
+
+        
+        NSDraggingSession *draggingSession = [view beginDraggingSessionWithItems:@[dragItem]
+                                                                                event:event
+                                                                                source:dragObject];
+        
+        return DragDropEffect::Copy;
+    }
+    
     return DragDropEffect::None;
 }
 
