@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using FlaxEditor.GUI;
+using EditorUtils = FlaxEditor.Utilities;
 using FlaxEngine;
 using FlaxEngine.Json;
 using FlaxEngine.GUI;
@@ -274,7 +275,7 @@ namespace FlaxEditor.Windows.Profiler
                 ContextMenuButton b;
                 b = cm.AddButton("Open", () => Editor.Instance.ContentEditing.Open(assetItem));
                 cm.AddButton("Show in content window", () => Editor.Instance.Windows.ContentWin.Select(assetItem));
-                cm.AddButton("Show in explorer", () => FileSystem.ShowFileExplorer(System.IO.Path.GetDirectoryName(assetItem.Path)));
+                cm.AddButton(EditorUtils.Utils.GetRevealInLabel(), () => FileSystem.ShowFileExplorer(System.IO.Path.GetDirectoryName(assetItem.Path)));
                 cm.AddButton("Select actors using this asset", () => Editor.Instance.SceneEditing.SelectActorsUsingAsset(assetItem.ID));
                 cm.AddButton("Show asset references graph", () => Editor.Instance.Windows.Open(new AssetReferencesGraphWindow(Editor.Instance, assetItem)));
                 cm.AddButton("Copy name", () => Clipboard.Text = assetItem.NamePath);

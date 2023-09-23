@@ -1235,5 +1235,18 @@ namespace FlaxEditor.Utilities
             }
             return s;
         }
+
+        /// <summary>
+        /// Provides the proper reveal label for the given OSs
+        /// </summary>
+        public static string GetRevealInLabel() 
+        {
+            if (Platform.PlatformType == PlatformType.Windows)
+                return "Show in Explorer";
+            if (Platform.PlatformType == PlatformType.Mac)
+                return "Reveal in Finder";
+            
+            return "Open Containing Folder";
+        }
     }
 }

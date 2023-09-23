@@ -8,6 +8,7 @@ using FlaxEditor.GUI;
 using FlaxEditor.GUI.ContextMenu;
 using FlaxEditor.GUI.Dialogs;
 using FlaxEditor.GUI.Tree;
+using EditorUtils = FlaxEditor.Utilities;
 using FlaxEngine;
 using FlaxEngine.GUI;
 
@@ -139,7 +140,7 @@ namespace FlaxEditor.Content.Import
             var menu = new ContextMenu();
             menu.AddButton("Rename", OnRenameClicked);
             menu.AddButton("Don't import", OnDontImportClicked);
-            menu.AddButton("Show in Explorer", OnShowInExplorerClicked);
+            menu.AddButton(EditorUtils.Utils.GetRevealInLabel(), OnShowInExplorerClicked);
             menu.Tag = node;
             menu.Show(node, location);
         }

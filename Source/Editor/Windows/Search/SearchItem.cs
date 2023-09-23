@@ -2,6 +2,7 @@
 
 using FlaxEditor.Content;
 using FlaxEditor.GUI.ContextMenu;
+using EditorUtils = FlaxEditor.Utilities;
 using FlaxEngine;
 using FlaxEngine.GUI;
 
@@ -157,7 +158,7 @@ namespace FlaxEditor.Windows.Search
                 var cm = new FlaxEditor.GUI.ContextMenu.ContextMenu { Tag = assetItem };
                 b = cm.AddButton("Open", () => Editor.Instance.ContentFinding.Open(Item));
                 cm.AddSeparator();
-                cm.AddButton("Show in explorer", () => FileSystem.ShowFileExplorer(System.IO.Path.GetDirectoryName(assetItem.Path)));
+                cm.AddButton(EditorUtils.Utils.GetRevealInLabel(), () => FileSystem.ShowFileExplorer(System.IO.Path.GetDirectoryName(assetItem.Path)));
                 cm.AddButton("Show in Content window", () => Editor.Instance.Windows.ContentWin.Select(assetItem, true));
                 b.Enabled = proxy != null && proxy.CanReimport(assetItem);
                 if (assetItem is BinaryAssetItem binaryAsset)
